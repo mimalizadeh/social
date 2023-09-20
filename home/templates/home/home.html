@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        <p>Hello {{ request.user|capfirst }}</p>
+    {% else %}
+        <p>Hello</p>
+    {% endif %}
+    <h2>Index Page</h2>
+{% endblock %}
