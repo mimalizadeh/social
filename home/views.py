@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.utils.text import slugify
 from django.views import View
 
-from home.froms import PostUpdateForm
+from home.froms import PostCreateUpdateFrom, PostCreateForm
 from home.models import Post
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -31,18 +32,75 @@ class PostDeleteView(LoginRequiredMixin, View):
 
 
 class PostUpdateView(LoginRequiredMixin, View):
-    form_class = PostUpdateForm
+    form_class = PostCreateUpdateFrom
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.post_instance = None
+
+    def setup(self, request, *args, **kwargs):
+        self.post_instance = Post.objects.get(pk=kwargs['post_id'])
+        super().setup(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
-        post = Post.objects.get(pk=kwargs['post_id'])
+        post = self.post_instance
         if not post.user.id == request.user.id:
             messages.error(request, "You can't delete this Post")
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, post_id):
-        post = Post.objects.get(pk=post_id)
+    def get(self, request, *args, **kwargs):
+        post = self.post_instance
         form = self.form_class(instance=post)
         return render(request, 'home/update.html', {'form': form, 'post': post})
 
-    def post(self):
-        pass
+    def post(self, request, *args, **kwargs):
+        post = self.post_instance
+        form = self.form_class(request.POST, instance=post)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            cd = form.cleaned_data
+            new_post.slug = slugify(cd.get('body')[:30])
+            new_post.save()
+            messages.success(request, 'Post update success fully', extra_tags='success')
+            return redirect('home:post_detail', post.id, post.slug)
+
+
+class PostCreateView(LoginRequiredMixin, View):
+    form_class = PostCreateForm
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, 'home/create.html', {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = request.user
+            slug = slugify(cd['body'][:30])
+            Post.objects.create(user=user, body=cd['body'], slug=slug)
+            messages.success(request, "Post add successfully", extra_tags='success')
+            return redirect('account:user_profile', request.user.id)
+
+        return render(request, 'home/create.html', {'form': form})
+
+
+class PostCreateViewTwo(LoginRequiredMixin, View):
+    form_class = PostCreateUpdateFrom
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, 'home/create.html', {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(cd['body'][:30])
+            new_post.user = request.user
+            new_post.save()
+            messages.success(request, 'Post add successfully', extra_tags='success')
+            return redirect('home:post_detail', new_post.id, new_post.slug)
+
+        return render(request, 'home/create.html', {'form': form})
