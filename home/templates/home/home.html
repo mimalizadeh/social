@@ -6,14 +6,29 @@
     {% else %}
         <p>Hello</p>
     {% endif %}
-    <h2>All post list :</h2>
 
-    <div class="card">
-        {% for post in posts %}
-            <a href="{{ post.get_absolute_url }}"
-               class="card-body">[{{ post.updated|date:"Y-M" }}] - {{ post.body|truncatewords:8 }}</a>
-            <hr/>
-        {% endfor %}
+    <div class="container card">
+
+
+        <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
+            <h2 class="h2 mb-2 fw-normal ">All post list :</h2>
+            <div class="list-group">
+                {% for post in posts %}
+                    <a href="{{ post.get_absolute_url }}"
+                       class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                        <i width="32" height="32" class="bi bi-card-text"></i>
+                        <div class="d-flex gap-2 w-100 justify-content-between">
+                            <div>
+                                <h6 class="mb-0">{{ post.slug }}</h6>
+                                <p class="mb-0 opacity-75">{{ post.body|truncatewords:15 }}</p>
+                            </div>
+                            <small class="opacity-50 text-nowrap">By {{ post.user.username|capfirst }}
+                                - {{ post.updated|date:"Y-M" }}</small>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
 {% endblock %}
