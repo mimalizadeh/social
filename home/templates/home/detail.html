@@ -12,4 +12,55 @@
         <p class="card-body"> {{ post.body }}</p>
 
     </div>
+    <br/>
+
+    {% if request.user.is_authenticated %}
+        <div class="card">
+            <form action="" method="post" class="card-body">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <div class="d-flex justify-content-left">
+                    <input type="submit" class="btn btn-primary  py-2  " value="Send">
+                </div>
+            </form>
+        </div>
+
+    {% else %}
+        <p class="alert alert-warning">Please login in from send comment</p>
+    {% endif %}
+
+    <br/>
+
+    <div class="card m-1 p-4" style="">
+
+        {% for comment in comments %}
+            <div class="card bg-dark text-white">
+                <p class="card-header">{{ comment.user|capfirst }} | {{ comment.created|timesince }}</p>
+                <p class="card-body">{{ comment.body }}</p>
+                <div class=" card text-white p-3 m-4">
+                    <form class="card-body" action="{% url 'home:reply_comment' post.id comment.id %}" method="post">
+                        {% csrf_token %}
+                        {{ reply_form.as_p }}
+                        <div class="d-flex justify-content-left">
+                            <input type="submit" class="btn btn-primary  py-2  " value="Send">
+                        </div>
+
+                    </form>
+                </div>
+
+                {% with replays=comment.rcomment.all %}
+                    {% for replay in replays %}
+                        <div class="card bg-primary p-3 pb-0 m-4 text-white">
+                            <p class="card-header">{{ replay.user|capfirst }} | {{ replay.created|timesince }}</p>
+                            <p class="card-body">{{ replay.body }}</p>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div> <br/>
+        {% empty %}
+            <p>Not comment yet!</p>
+        {% endfor %}
+    </div>
+
 {% endblock %}
