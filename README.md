@@ -1,0 +1,3 @@
+# social
+
+Simlpe django project
