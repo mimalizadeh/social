@@ -1,12 +1,24 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% block content %}
+    <div class="p-3 p-lg-4 pt-0">
+        <div class="card-body row align-items-center container">
+            <div class="col-md-6">
+                <img src="{% static 'home/img/update.png' %}" class="img-fluid">
+            </div>
+            <div class="col-md-6 p-5 pt-0 ">
+                <p class="display-5 py-4">Update post</p>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ form.as_p }}
 
-    <h3>Update post : {{ post.slug }}</h3><hr/>
+                    <input type="submit" value="Save" class="btn btn-primary col-12 py-3">
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Update" class="btn btn-info">
-    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}

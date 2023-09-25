@@ -1,19 +1,24 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% block content %}
+    <div class="p-4">
+        <div class="card-body row align-items-center container">
+            <div class="col-md-6">
+                <img src="{% static 'account/pic/login.png' %}" class="img-fluid">
+            </div>
+            <div class="col-md-6 p-5 pt-0">
+                <p class="display-5 py-4">Login</p>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ form.as_p }}
 
-    <div class="container col-md-6">
-        <div class="card">
+                    <input type="submit" value="Login" class="btn btn-primary col-12 py-3">
 
-            <form class="card-body" action="" method="post" novalidate>
-                <h2 class="h2 mb-2 fw-normal ">Login User</h2>
-                {% csrf_token %}
-                {{ form.as_p }}
-                <div class="d-flex justify-content-center">
-                    <input type="submit" class="btn btn-primary w-100 py-3  " value="Login">
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
+
 
 {% endblock %}

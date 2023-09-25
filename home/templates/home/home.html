@@ -31,17 +31,20 @@
             <div class="row">
                 {% for post in posts %}
                     <div class="py-4 col-xl-4 col-md-6">
-                        <div class="card">
+                        <div class="card mb-3" style="min-height:100%">
                             {% with image=img|random %}
                                 <img src="{% static image %}" class="img-fluid"/>
                             {% endwith %}
-                            <div class="card-body text-center">
-                                <h5 class="card-title mb-1">{{ post.slug }}</h5>
-                                <p class="card-text lead text-muted">{{ post.body|truncatewords:6 }}</p>
-                                <a href="{{ post.get_absolute_url }}" class="btn btn-primary">View</a>
+                            <div class="card-body">
+                                <p class="card-text"><small class="text-muted">{{ post.user.username|capfirst }} - {{ post.updated|timesince }}</small></p>
+                                <h5 class="card-title">{{ post.slug }}</h5>
+                                <p class="card-text">{{ post.body|truncatewords:8 }}</p>
+                                <a href="{{ post.get_absolute_url }}" class="stretched-link"></a>
                             </div>
                         </div>
                     </div>
+
+
                 {% endfor %}
 
             </div>

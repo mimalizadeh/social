@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <section class="h-100">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-lg-7 col-xl-5">
+                    <div class="card">
+                        <div class="rounded-top text-dark d-flex flex-row"
+                             style="background-color: #fac100; height:max-content;">
+                            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                                     alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-3"
+                                     style="width: 150px; z-index: 1">
+
+                            </div>
+                            <div class="ms-3" style="margin-top: 130px;">
+                                <h5>{{ user.first_name|capfirst }} {{ user.last_name|capfirst }}</h5>
+                                <p>@{{ user.username }}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 row align-items-center text-center">
+                            {% if request.user.id == user.id %}
+                                <div class="col-md-6 py-1">
+                                    <a href="{% url 'home:post_create' %}" class="btn btn-outline-dark">Create
+                                        post</a>
+                                    <a href="{% url 'account:edit_profile' %}" class="btn btn-outline-dark">Edit
+                                        Profile</a>
+                                </div>
+                            {% endif %}
+
+                            {% if request.user.id != user.id and not is_followed %}
+                                <a href="{% url 'account:user_follow' user.id %}"
+                                   class="btn btn-outline-success">Follow</a>
+                            {% elif request.user.id != user.id and is_followed %}
+                                <a href="{% url 'account:user_unfollow' user.id %}" class="btn btn-outline-danger">Unfollow</a>
+                            {% endif %}
+                        </div>
+                        {#                        <div class="text-black " style="background-color: #f8f9fa;">#}
+                        {#                            <div class="row align-items-center text-center">#}
+                        {#                                <div class="col-md-4 py-4">#}
+                        {#                                    <p class="mb-1 h5">253</p>#}
+                        {#                                    <p class="small text-muted mb-0">Photos</p>#}
+                        {#                                </div>#}
+                        {#                                <div class="col-md-4 py-4">#}
+                        {#                                    <p class="mb-1 h5">1026</p>#}
+                        {#                                    <p class="small text-muted mb-0">Followers</p>#}
+                        {#                                </div>#}
+                        {#                                <div class="col-md-4 py-4">#}
+                        {#                                    <p class="mb-1 h5">478</p>#}
+                        {#                                    <p class="small text-muted mb-0">Following</p>#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                        </div>#}
+                        <div class="card-body p-4 text-black">
+                            <div class="mb-5">
+                                <p class="lead fw-normal mb-1">About</p>
+                                <div class="p-4" style="background-color: #f8f9fa;">
+                                    <p class="font-italic mb-1">{{ user.userprofile.bio }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <p class="lead fw-normal mb-0">Recent Post</p>
+                                {#                                <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>#}
+                            </div>
+                            <div class="row">
+                                {% for post in posts %}
+                                    <div class="py-4 col-xl-6 col-md-6">
+                                        <div class="card mb-3" style="min-height:100%">
+                                            <img src="{% static 'home/img/post-1.png' %}" class="img-fluid"/>
+                                            <div class="card-body">
+                                                <p class="card-text"><small
+                                                        class="text-muted">{{ post.user.username|capfirst }}
+                                                    - {{ post.updated|timesince }}</small></p>
+                                                <h5 class="card-title">{{ post.slug }}</h5>
+                                                <p class="card-text">{{ post.body|truncatewords:8 }}</p>
+                                                <a href="{{ post.get_absolute_url }}" class="stretched-link"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

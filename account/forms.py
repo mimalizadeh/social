@@ -5,14 +5,16 @@ from account.models import UserProfile
 
 
 class UserRegistrationForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Username"}),
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-3', 'placeholder': "Username"}),
                                label='')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': "Email"}), label='')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control py-3', 'placeholder': "Email"}),
+                             label='')
     password1 = forms.CharField(label='',
-                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': "Password"}))
+                                widget=forms.PasswordInput(
+                                    attrs={'class': 'form-control py-3', 'placeholder': "Password"}))
     password2 = forms.CharField(label="",
                                 widget=forms.PasswordInput(
-                                    attrs={'class': 'form-control', 'placeholder': "Confirm password"}))
+                                    attrs={'class': 'form-control py-3', 'placeholder': "Confirm password"}))
 
     def clean_email(self):
         """
@@ -48,10 +50,12 @@ class UserRegistrationForm(forms.Form):
 
 
 class UserLoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
-                               label='')
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
-                               label='')
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control py-3', 'placeholder': 'Username', }),
+        label='')
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control py-3', 'placeholder': 'Password'}),
+        label='')
 
 
 class UserEditProfileForm(forms.ModelForm):
