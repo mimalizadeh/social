@@ -36,3 +36,8 @@ class CommentReplyForm(forms.ModelForm):
         labels = {
             'body': ''
         }
+
+
+class PostSearchForm(forms.Form):
+    search = forms.CharField(max_length=100, label='',
+                             widget=forms.TextInput(attrs={'class': 'form-control me-2', 'placeholder': 'Search in posts'}))

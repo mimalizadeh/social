@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import ValidationError
+from account.models import UserProfile
 
 
 class UserRegistrationForm(forms.Form):
@@ -51,3 +52,30 @@ class UserLoginForm(forms.Form):
                                label='')
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
                                label='')
+
+
+class UserEditProfileForm(forms.ModelForm):
+    name = forms.CharField(max_length=100,
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Firstname'}),
+                           label="")
+    family = forms.CharField(max_length=100,
+                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Lastname'}),
+                             label="")
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+                             label="")
+
+    class Meta:
+        model = UserProfile
+        fields = ['age', 'bio', 'phone', 'address']
+        widgets = {
+            'age': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Age'}),
+            'bio': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bio'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone'}),
+            'address': forms.Textarea(attrs={'class': 'form-control ', 'rows': 3, 'placeholder': 'Address'})
+        }
+        labels = {
+            'age': "",
+            'bio': "",
+            'phone': "",
+            'address': "",
+        }

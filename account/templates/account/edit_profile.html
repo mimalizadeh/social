@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container col-md-6">
+        <div class="card ">
+            <div class="card-header">
+                <p>Edit {{ request.user.username|capfirst }} profile</p>
+
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <div>
+                        <input type="submit" value="Edit" class="btn btn-primary py-2 col-md-3">
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}

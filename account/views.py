@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.contrib.auth.models import User
-from account.forms import UserRegistrationForm, UserLoginForm
+from account.forms import UserRegistrationForm, UserLoginForm, UserEditProfileForm
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -140,3 +140,28 @@ class UserUnfollowView(LoginRequiredMixin, View):
             messages.error(request, 'You not followed this user')
 
         return redirect('account:user_profile', user_id)
+
+
+class UserEditProfile(View):
+    form_class = UserEditProfileForm
+
+    def get(self, request):
+        initial = {
+            'name': request.user.first_name,
+            'family': request.user.last_name,
+            'email': request.user.email,
+        }
+        form = self.form_class(instance=request.user.userprofile, initial=initial)
+        return render(request, 'account/edit_profile.html', {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            request.user.email = form.cleaned_data['email']
+            request.user.first_name = form.cleaned_data['name']
+            request.user.last_name = form.cleaned_data['family']
+            request.user.save()
+
+            messages.success(request, 'Your profile updated', 'success')
+        return redirect('account:user_profile', request.user.id)

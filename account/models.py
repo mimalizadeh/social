@@ -13,3 +13,14 @@ class Relation(models.Model):
 
     def __str__(self):
         return f"{self.from_user} following {self.to_user}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, models.CASCADE)
+    age = models.PositiveSmallIntegerField(default=0)
+    bio = models.TextField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(max_length=400, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} is {self.age} old"

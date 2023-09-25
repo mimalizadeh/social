@@ -3,17 +3,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.views import View
 
-from home.froms import PostCreateUpdateFrom, PostCreateForm, CommentCreateFrom, CommentReplyForm
-from home.models import Post, Comment
+from home.froms import PostCreateUpdateFrom, PostCreateForm, CommentCreateFrom, CommentReplyForm, PostSearchForm
+from home.models import Post, Comment, Vote
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 
 class HomeView(View):
+    form_class = PostSearchForm
+
     def get(self, request):
-        posts = Post.objects.all()
-        return render(request, 'home/home.html', {'posts': posts})
+        posts = Post.objects.all()[:6]
+        img = ['home/img/post-1.png', 'home/img/post-2.png', 'home/img/post-3.png', 'home/img/post-4.png']
+        if request.GET.get('search'):
+            posts = Post.objects.filter(body__regex=request.GET['search'])
+        return render(request, 'home/home.html',
+                      {'posts': posts, 'search_form': self.form_class, 'search_enable': True, "img": img})
 
 
 class PostDetailView(View):
@@ -30,9 +36,13 @@ class PostDetailView(View):
 
     def get(self, request, *args, **kwargs):
         comments = self.post_instance.pcomment.filter(is_replay=False)
+        can_like = False
+        if request.user.is_authenticated and self.post_instance.can_like:
+            can_like = True
         return render(request, "home/detail.html",
                       {'post': self.post_instance, 'comments': comments, 'form': self.form_class,
-                       'reply_form': self.form_class_reply})
+                       'reply_form': self.form_class_reply,
+                       'can_like': can_like})
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -133,7 +143,7 @@ class PostCreateViewTwo(LoginRequiredMixin, View):
         return render(request, 'home/create.html', {'form': form})
 
 
-class CommentReplyView(View):
+class CommentReplyView(LoginRequiredMixin, View):
     def post(self, request, post_id, comment_id):
         post = get_object_or_404(Post, pk=post_id)
         comment = get_object_or_404(Comment, pk=comment_id)
@@ -147,4 +157,16 @@ class CommentReplyView(View):
             reply.save()
             messages.success(request, 'Your reply submited', extra_tags='success')
 
+        return redirect('home:post_detail', post.id, post.slug)
+
+
+class VotesLikeView(LoginRequiredMixin, View):
+    def get(self, request, post_id):
+        post = get_object_or_404(Post, pk=post_id)
+        like = Vote.objects.filter(user=request.user, post=post)
+        if like.exists():
+            messages.error(request, 'You already likeed this post', 'danger')
+        else:
+            Vote.objects.create(post=post, user=request.user)
+            messages.success(request, 'You liked this post', 'success')
         return redirect('home:post_detail', post.id, post.slug)
